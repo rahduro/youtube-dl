@@ -147,29 +147,41 @@ class FrontendMastersIE(FrontendMastersBaseIE):
         source_url = '%s/video/%s/source' % (self._API_BASE, lesson_id)
 
         formats = []
-        for ext in ('webm', 'mp4'):
-            for quality in ('low', 'mid', 'high'):
-                resolution = self._QUALITIES[quality].copy()
-                format_id = '%s-%s' % (ext, quality)
-                format_url = self._download_json(
-                    source_url, lesson_id,
-                    'Downloading %s source JSON' % format_id, query={
-                        'f': ext,
-                        'r': resolution['height'],
-                    }, headers={
-                        'Referer': url,
+        # for ext in ('webm', 'mp4'):
+        #     for quality in ('low', 'mid', 'high'):
+        #         resolution = self._QUALITIES[quality].copy()
+        #         format_id = '%s-%s' % (ext, quality)
+        #         format_url = self._download_json(
+        #             source_url, lesson_id,
+        #             'Downloading %s source JSON' % format_id, query={
+        #                 'f': ext,
+        #                 'r': resolution['height'],
+        #             }, headers={
+        #                 'Referer': "https://frontendmasters.com",
+        #             }, fatal=False)['url']
+
+        #         if not format_url:
+        #             continue
+
+        #         f = resolution.copy()
+        #         f.update({
+        #             'url': format_url,
+        #             'ext': ext,
+        #             'format_id': format_id,
+        #         })
+        #         formats.append(f)
+        formats.append({
+            'width': 1920,
+            'height': 1080,
+            'ext': 'webm',
+            'format_id': 'webm-high',
+            'url': self._download_json(source_url, lesson_id,
+                    'Downloading webm-high source JSON', query={
+                        'f': 'webm',
+                        'r': 1080,
+                    }, headers={'Referer': "https://frontendmasters.com",
                     }, fatal=False)['url']
-
-                if not format_url:
-                    continue
-
-                f = resolution.copy()
-                f.update({
-                    'url': format_url,
-                    'ext': ext,
-                    'format_id': format_id,
-                })
-                formats.append(f)
+        })
         self._sort_formats(formats)
 
         subtitles = {
